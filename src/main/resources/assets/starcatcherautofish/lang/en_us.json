@@ -1,6 +1,9 @@
 {
   "starcatcherautofish.action.on": "Autofish：On",
   "starcatcherautofish.action.off": "Autofish：Off",
+  "starcatcherautofish.autocast.on": "Auto Cast：On",
+  "starcatcherautofish.autocast.off": "Auto Cast：Off",
   "key.categories.starcatcherautofish": "Starcatcher AutoFish",
-  "key.starcatcherautofish.toggle": "Toggle Autofish"
+  "key.starcatcherautofish.toggle": "Toggle Autofish",
+  "key.starcatcherautofish.autocast": "Toggle Auto Cast/Reel"
 }

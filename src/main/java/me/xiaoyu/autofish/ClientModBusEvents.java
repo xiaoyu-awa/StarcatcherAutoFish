@@ -19,8 +19,16 @@ public class ClientModBusEvents {
             CATEGORY
     );
 
+    public static final KeyMapping AUTO_CAST_KEY = new KeyMapping(
+            "key.starcatcherautofish.autocast",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_INSERT,
+            CATEGORY
+    );
+
     @SubscribeEvent
     public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
         event.register(TOGGLE_KEY);
+        event.register(AUTO_CAST_KEY);
     }
 }

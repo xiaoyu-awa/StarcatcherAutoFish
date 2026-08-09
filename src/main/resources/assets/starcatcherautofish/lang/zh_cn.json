@@ -1,6 +1,9 @@
 {
   "starcatcherautofish.action.on": "自动钓鱼：开启",
   "starcatcherautofish.action.off": "自动钓鱼：关闭",
+  "starcatcherautofish.autocast.on": "自动抛竿：开启",
+  "starcatcherautofish.autocast.off": "自动抛竿：关闭",
   "key.categories.starcatcherautofish": "捕星者自动钓鱼",
-  "key.starcatcherautofish.toggle": "切换开关"
+  "key.starcatcherautofish.toggle": "切换开关",
+  "key.starcatcherautofish.autocast": "切换自动抛竿收杆"
 }

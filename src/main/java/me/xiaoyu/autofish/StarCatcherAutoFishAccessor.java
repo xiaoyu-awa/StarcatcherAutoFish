@@ -1,6 +1,9 @@
 package me.xiaoyu.autofish;
 
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -12,14 +15,20 @@ public final class StarCatcherAutoFishAccessor {
     private static final String SCREEN_FQCN = "com.wdiscute.starcatcher.minigame.FishingMinigameScreen";
     private static final String SPOT_FQCN = "com.wdiscute.starcatcher.minigame.ActiveSweetSpot";
     private static final String NIKDO_FQCN = "com.wdiscute.starcatcher.registry.minigamemodifiers.Nikdo53Modifier";
+    private static final String BOBBER_FQCN = "com.wdiscute.starcatcher.bobberentity.FishingBobEntity";
+    private static final String ROD_FQCN = "com.wdiscute.starcatcher.registry.items.rod.StarcatcherFishingRodItem";
 
     private static volatile boolean initialized = false;
     private static volatile boolean available = false;
     private static volatile boolean nikdoAvailable = false;
+    private static volatile boolean bobberAvailable = false;
+    private static volatile boolean rodAvailable = false;
 
     private static Class<?> screenClass;
     private static Class<?> spotClass;
     private static Class<?> nikdoClass;
+    private static Class<?> bobberClass;
+    private static Class<?> rodItemClass;
 
     private static Method getActiveSweetSpots;
     private static Method getModifiers;
@@ -31,6 +40,7 @@ public final class StarCatcherAutoFishAccessor {
     private static Field spotPos;
     private static Field spotThickness;
     private static Field pointerLayer;
+    private static Field bobberStateField;
 
     private StarCatcherAutoFishAccessor() {
     }
@@ -69,7 +79,24 @@ public final class StarCatcherAutoFishAccessor {
         } catch (Throwable t) {
             nikdoAvailable = false;
         }
+
+        try {
+            bobberClass = Class.forName(BOBBER_FQCN);
+            bobberStateField = bobberClass.getField("STATE");
+            bobberAvailable = true;
+        } catch (Throwable t) {
+            bobberAvailable = false;
+        }
+
+        try {
+            rodItemClass = Class.forName(ROD_FQCN);
+            rodAvailable = true;
+        } catch (Throwable t) {
+            rodAvailable = false;
+        }
         initialized = true;
+        StarCatcherAutoFish.LOGGER.info("Accessor init: minigame={}, nikdo={}, bobber={}, rod={}",
+                available, nikdoAvailable, bobberAvailable, rodAvailable);
     }
 
     public static boolean isMinigameScreen(Screen screen) {
@@ -161,6 +188,39 @@ public final class StarCatcherAutoFishAccessor {
             return spotThickness.getInt(spot);
         } catch (Throwable t) {
             return 0;
+        }
+    }
+
+    public static boolean isBobberAvailable() {
+        if (!initialized) init();
+        return bobberAvailable;
+    }
+
+    public static boolean isRodAvailable() {
+        if (!initialized) init();
+        return rodAvailable;
+    }
+
+    public static boolean isBobber(Entity entity) {
+        return bobberAvailable && entity != null && bobberClass.isInstance(entity);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static int getBobberState(Entity bobber) {
+        try {
+            EntityDataAccessor<Integer> accessor = (EntityDataAccessor<Integer>) bobberStateField.get(null);
+            return bobber.getEntityData().get(accessor);
+        } catch (Throwable t) {
+            return 0;
+        }
+    }
+
+    public static boolean isRodItem(ItemStack stack) {
+        if (!rodAvailable || stack == null) return false;
+        try {
+            return rodItemClass.isInstance(stack.getItem());
+        } catch (Throwable t) {
+            return false;
         }
     }
 }
