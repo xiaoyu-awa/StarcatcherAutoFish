@@ -17,18 +17,21 @@ public final class StarCatcherAutoFishAccessor {
     private static final String NIKDO_FQCN = "com.wdiscute.starcatcher.registry.minigamemodifiers.Nikdo53Modifier";
     private static final String BOBBER_FQCN = "com.wdiscute.starcatcher.bobberentity.FishingBobEntity";
     private static final String ROD_FQCN = "com.wdiscute.starcatcher.registry.items.rod.StarcatcherFishingRodItem";
+    private static final String TNT_BEHAVIOUR_FQCN = "com.wdiscute.starcatcher.registry.sweetspotbehaviour.TntSweetSpotBehaviour";
 
     private static volatile boolean initialized = false;
     private static volatile boolean available = false;
     private static volatile boolean nikdoAvailable = false;
     private static volatile boolean bobberAvailable = false;
     private static volatile boolean rodAvailable = false;
+    private static volatile boolean tntBehaviourAvailable = false;
 
     private static Class<?> screenClass;
     private static Class<?> spotClass;
     private static Class<?> nikdoClass;
     private static Class<?> bobberClass;
     private static Class<?> rodItemClass;
+    private static Class<?> tntBehaviourClass;
 
     private static Method getActiveSweetSpots;
     private static Method getModifiers;
@@ -41,6 +44,7 @@ public final class StarCatcherAutoFishAccessor {
     private static Field spotThickness;
     private static Field pointerLayer;
     private static Field bobberStateField;
+    private static Field spotBehaviour;
 
     private StarCatcherAutoFishAccessor() {
     }
@@ -64,6 +68,7 @@ public final class StarCatcherAutoFishAccessor {
 
             spotPos = spotClass.getField("pos");
             spotThickness = spotClass.getField("thickness");
+            spotBehaviour = spotClass.getField("behaviour");
 
             available = true;
         } catch (Throwable t) {
@@ -94,9 +99,16 @@ public final class StarCatcherAutoFishAccessor {
         } catch (Throwable t) {
             rodAvailable = false;
         }
+
+        try {
+            tntBehaviourClass = Class.forName(TNT_BEHAVIOUR_FQCN);
+            tntBehaviourAvailable = true;
+        } catch (Throwable t) {
+            tntBehaviourAvailable = false;
+        }
         initialized = true;
-        StarCatcherAutoFish.LOGGER.info("Accessor init: minigame={}, nikdo={}, bobber={}, rod={}",
-                available, nikdoAvailable, bobberAvailable, rodAvailable);
+        StarCatcherAutoFish.LOGGER.info("Accessor init: minigame={}, nikdo={}, bobber={}, rod={}, tnt={}",
+                available, nikdoAvailable, bobberAvailable, rodAvailable, tntBehaviourAvailable);
     }
 
     public static boolean isMinigameScreen(Screen screen) {
@@ -219,6 +231,16 @@ public final class StarCatcherAutoFishAccessor {
         if (!rodAvailable || stack == null) return false;
         try {
             return rodItemClass.isInstance(stack.getItem());
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    public static boolean isTntSpot(Object spot) {
+        if (!tntBehaviourAvailable || spot == null) return false;
+        try {
+            Object behaviour = spotBehaviour.get(spot);
+            return behaviour != null && tntBehaviourClass.isInstance(behaviour);
         } catch (Throwable t) {
             return false;
         }

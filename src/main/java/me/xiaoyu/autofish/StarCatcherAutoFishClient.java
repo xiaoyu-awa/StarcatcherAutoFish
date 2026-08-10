@@ -67,6 +67,8 @@ public class StarCatcherAutoFishClient {
 
         List<Object> spots = StarCatcherAutoFishAccessor.getActiveSweetSpots(minigame);
         for (Object spot : spots) {
+            if (StarCatcherAutoFishAccessor.isTntSpot(spot)) continue;
+
             float spotPos = StarCatcherAutoFishAccessor.getSpotPos(spot);
             int thickness = StarCatcherAutoFishAccessor.getSpotThickness(spot);
             int halfThickness = thickness / 2;
